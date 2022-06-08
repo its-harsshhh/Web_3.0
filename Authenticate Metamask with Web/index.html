@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <title>Web3 Metamask Login</title>
+</head>
+<body class="flex w-screen h-screen justify-center items-center">
+    
+
+    <div class="flex-col space-y-2 justify-center items-center">
+
+        <h1 class="text-4xl font-mono ">Login with Metamask</h1>
+
+        <button id='logbut' onclick="" class="mx-auto rounded-md p-2 bg-blue-500 text-white">
+          Login with MetaMask
+        </button>
+        
+        <p id='userWallet' class='text-lg text-gray-600 my-2'></p>
+
+
+    </div>
+
+
+    <script>   
+        window.userWalletAddress = null
+        const log=document.getElementById('logbut')
+        const userWallet = document.getElementById('userWallet')
+
+
+        function buttonlogin(){
+
+            if (!window.ethereum ) {
+                
+                log.innerText='metamask is not installed'
+                log.classList.remove('bg-blue-500', 'text-white')
+                log.classList.add('bg-white-500', 'text-black', 'border','cursor-not-allowed')
+                return false
+            }
+
+            log.addEventListener('click',loginWithMetaMask)
+
+        }
+
+        async function loginWithMetaMask() {
+
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+            
+            .catch((e) => {
+                console.error(e.message)
+                log.innerText='Reload the Page'
+                window.alert("User rejected the request");
+                log.classList.remove('bg-blue-500', 'text-white')
+                log.classList.add('bg-white-500', 'text-black', 'border','cursor-not-allowed')
+                return
+            })
+            if (!accounts) { return }
+
+            window.userWalletAddress = accounts[0]
+            userWallet.innerText = window.userWalletAddress
+
+            log.innerText = 'Sign out of MetaMask'
+
+            log.removeEventListener('click', loginWithMetaMask)
+            
+            setTimeout(() => {
+            log.addEventListener('click',signOutOfMetaMask)}, 200)
+        }
+
+        function signOutOfMetaMask() {
+            window.userWalletAddress = null
+            userWallet.innerText = ''
+            log.innerText = 'Sign in with MetaMask'
+
+            log.removeEventListener('click', signOutOfMetaMask)
+            setTimeout(() => {
+                log.addEventListener('click',loginWithMetaMask)
+            }, 200)
+        }
+
+        window.addEventListener('DOMContentLoaded', (event) => {
+            buttonlogin()
+        });
+
+    </script>
+
+</body>
+</html>
